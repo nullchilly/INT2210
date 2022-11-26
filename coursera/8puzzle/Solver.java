@@ -8,11 +8,10 @@ public class Solver {
   private int moves = -1;
   private Stack<Board> ans;
 
-  private class Node implements Comparable {
+  private class Node implements Comparable<Node> {
     private int height = 0, weight = 0, manhattan;
-    Node pre;
-
-    Board board;
+    private Node pre;
+    private Board board;
 
     public Node(Node pre, Board board) {
       this.pre = pre;
@@ -23,24 +22,26 @@ public class Solver {
     }
 
     @Override
-    public int compareTo(Object that) {
-      Node o = (Node) that;
+    public int compareTo(Node o) {
       return weight == o.weight ? manhattan - o.manhattan : weight - o.weight;
     }
   }
 
   // find a solution to the initial board (using the A* algorithm)
   public Solver(Board initial) {
+    if (initial == null) {
+      throw new IllegalArgumentException();
+    }
     MinPQ<Node> pq = new MinPQ<>();
-//    pq.insert(new Node(null, initial));
+    pq.insert(new Node(null, initial));
     Board twin = initial.twin();
     pq.insert(new Node(null, twin));
 //    System.out.println(cur.toString() + " " + twin.toString());
 //    System.out.println(cur.manhattan() + " " + twin.manhattan());
-    System.out.println("start");
+//    System.out.println("start");
     while (!pq.isEmpty()) {
       Node cur = pq.delMin();
-//      System.out.println(cur.toString() + " " + cur.hamming());
+//      System.out.println(cur.board);
       if (cur.board.isGoal()) {
         ans = new Stack<>();
         Node k = cur;
@@ -48,7 +49,13 @@ public class Solver {
           ans.push(k.board);
           k = k.pre;
         }
-        moves = ans.size();
+//        System.out.println(ans.peek());
+//        System.out.println(initial);
+        if (!ans.peek().equals(initial)) {
+          moves = -1;
+          break;
+        }
+        moves = ans.size() - 1;
         break;
       }
       Node p = cur.pre;
@@ -77,7 +84,7 @@ public class Solver {
   // test client (see below)
   public static void main(String[] args) {
     // create initial board from file
-    In in = new In("txt.txt");
+    In in = new In("inf.txt");
     int n = in.readInt();
     int[][] tiles = new int[n][n];
     for (int i = 0; i < n; i++)

@@ -9,14 +9,17 @@ public class SeamCarver {
 
   // create a seam carver object based on the given picture
   public SeamCarver(Picture picture) {
-    this.pic = picture;
+    if (picture == null) {
+      throw new IllegalArgumentException();
+    }
+    this.pic = new Picture(picture);
     n = pic.width();
     m = pic.height();
   }
 
   // current picture
   public Picture picture() {
-    return pic;
+    return new Picture(pic);
   }
 
   // width of current picture

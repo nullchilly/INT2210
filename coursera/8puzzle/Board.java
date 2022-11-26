@@ -12,8 +12,13 @@ public class Board {
   // create a board from an n-by-n array of tiles,
   // where tiles[row][col] = tile at (row, col)
   public Board(int[][] tiles) {
-    a = tiles.clone();
-    n = a.length;
+    n = tiles.length;
+    a = new int[n][n];
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        a[i][j] = tiles[i][j];
+      }
+    }
   }
 
   // string representation of this board
@@ -68,7 +73,7 @@ public class Board {
 
   // does this board equal y?
   public boolean equals(Object y) {
-    if (y == null || getClass() == y.getClass()) return false;
+    if (y == null || getClass() != y.getClass()) return false;
     Board o = (Board) y;
     if (n != o.n) return false;
     for (int i = 0; i < n; i++) {
@@ -112,10 +117,6 @@ public class Board {
     if (bi + 1 < n) ans.add(new Board(exchange(bi, bj, bi + 1, bj)));
     if (bj >= 1) ans.add(new Board(exchange(bi, bj, bi, bj - 1)));
     if (bj + 1 < n) ans.add(new Board(exchange(bi, bj, bi, bj + 1)));
-    for (int i = 0; i < ans.size(); i++) {
-      Board cur = ans.get(i);
-//      System.out.println(cur.toString());
-    }
     return ans;
   }
 
@@ -138,5 +139,4 @@ public class Board {
     Board board = new Board(tiles);
     System.out.println(board.toString());
   }
-
 }
