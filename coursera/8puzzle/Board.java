@@ -39,7 +39,7 @@ public class Board {
     int cnt = 0;
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        if (a[i][j] != i * n + j + 1) {
+        if (a[i][j] != 0 && a[i][j] != i * n + j + 1) {
           cnt++;
         }
       }
@@ -53,7 +53,7 @@ public class Board {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         if (a[i][j] != 0) {
-          ans += Math.abs(i - (a[i][j] - 1) / n) + Math.abs(j - (a[i][j] - 1) % n);
+          ans += Math.abs(i - ((a[i][j] - 1) / n)) + Math.abs(j - ((a[i][j] - 1) % n));
         }
       }
     }
@@ -81,7 +81,13 @@ public class Board {
   }
 
   private int[][] exchange(int i, int j, int k, int l) {
-    int[][] b = a.clone();
+//    int[][] b = a.clone();
+    int[][] b = new int[n][n];
+    for (int u = 0; u < n; u++) {
+      for (int v = 0; v < n; v++) {
+        b[u][v] = a[u][v];
+      }
+    }
     int tmp = b[i][j];
     b[i][j] = b[k][l];
     b[k][l] = tmp;
@@ -90,21 +96,25 @@ public class Board {
 
   // all neighboring boards
   public Iterable<Board> neighbors() {
-    int bx = 0, by = 0; // blanks
+    int bi = 0, bj = 0; // blanks
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         if (a[i][j] == 0) {
-          bx = i;
-          by = j;
+          bi = i;
+          bj = j;
           break;
         }
       }
     }
     List<Board> ans = new ArrayList<>();
-    if (bx > 0) ans.add(new Board(exchange(bx, by, bx - 1, by)));
-    if (bx < n - 1) ans.add(new Board(exchange(bx, by, bx + 1, by)));
-    if (by > 0) ans.add(new Board(exchange(bx, by, bx, by - 1)));
-    if (by < n - 1) ans.add(new Board(exchange(bx, by, bx, by + 1)));
+    if (bi >= 1) ans.add(new Board(exchange(bi, bj, bi - 1, bj)));
+    if (bi + 1 < n) ans.add(new Board(exchange(bi, bj, bi + 1, bj)));
+    if (bj >= 1) ans.add(new Board(exchange(bi, bj, bi, bj - 1)));
+    if (bj + 1 < n) ans.add(new Board(exchange(bi, bj, bi, bj + 1)));
+    for (int i = 0; i < ans.size(); i++) {
+      Board cur = ans.get(i);
+//      System.out.println(cur.toString());
+    }
     return ans;
   }
 
