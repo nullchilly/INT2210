@@ -7,6 +7,7 @@ public class Board {
 
   private int n;
   private int[][] a;
+  private int mahanttan = -1;
 
   // create a board from an n-by-n array of tiles,
   // where tiles[row][col] = tile at (row, col)

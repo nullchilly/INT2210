@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -10,61 +9,52 @@ public class Solver {
   private Stack<Board> ans;
 
   private class Node implements Comparable {
-    protected int depth = 0;
-    protected int height = 0, weight = 0;
+    private int height = 0, weight = 0, manhattan;
     Node pre;
 
-    Board cur;
+    Board board;
 
-    public Node(int height, int weight, Node pre, Board cur) {
-      this.height = height;
-      this.weight = weight;
+    public Node(Node pre, Board board) {
       this.pre = pre;
-      this.cur = cur;
+      this.height = (pre != null ? pre.height : 0) + 1;
+      this.board = board;
+      this.manhattan = board.manhattan();
+      this.weight = height + manhattan;
     }
 
     @Override
     public int compareTo(Object that) {
       Node o = (Node) that;
-      return weight == o.weight ? cur.manhattan() - o.cur.manhattan() : weight - o.weight;
+      return weight == o.weight ? manhattan - o.manhattan : weight - o.weight;
     }
   }
 
   // find a solution to the initial board (using the A* algorithm)
   public Solver(Board initial) {
     MinPQ<Node> pq = new MinPQ<>();
-    Board cur = initial;
-//    pq.insert(new Node(0, cur.manhattan(), null, cur));
-    Board twin = cur.twin();
-    pq.insert(new Node(0, twin.manhattan(), null, twin));
+//    pq.insert(new Node(null, initial));
+    Board twin = initial.twin();
+    pq.insert(new Node(null, twin));
 //    System.out.println(cur.toString() + " " + twin.toString());
 //    System.out.println(cur.manhattan() + " " + twin.manhattan());
-    Node k = null;
     System.out.println("start");
     while (!pq.isEmpty()) {
-      Node top = pq.delMin();
-      cur = top.cur;
+      Node cur = pq.delMin();
 //      System.out.println(cur.toString() + " " + cur.hamming());
-      int h = top.height;
-//      int w = top.weight;
-      if (cur.isGoal()) {
-        moves = h;
-        k = top;
-        System.out.println(h);
+      if (cur.board.isGoal()) {
+        ans = new Stack<>();
+        Node k = cur;
+        while (k != null) {
+          ans.push(k.board);
+          k = k.pre;
+        }
+        moves = ans.size();
         break;
       }
-      Node p = top.pre;
-      for (Board u : cur.neighbors()) {
-        if (p == null || !p.cur.equals(u)) pq.insert(new Node(h + 1, h + 1 + u.manhattan(), top,
-                u));
+      Node p = cur.pre;
+      for (Board u : cur.board.neighbors()) {
+        if (p == null || !p.board.equals(u)) pq.insert(new Node(cur, u));
       }
-//      if (cnt == 1) break;
-    }
-    ans = new Stack<>();
-    while (k != null) {
-//      System.out.println(k.cur);
-      ans.push(k.cur);
-      k = k.pre;
     }
   }
 
