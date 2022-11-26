@@ -1,11 +1,36 @@
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
+
+import java.util.Comparator;
+import java.util.Iterator;
 
 public class Solver {
 
+  private class Boardy extends Comparator {
+    int depth = 0;
+    int weight = 0;
+    Boardy pre;
+
+    public Boardy(int depth, int weight, Boardy pre) {
+      this.depth = depth;
+      this.weight = weight;
+      this.pre = pre;
+    }
+  }
+
   // find a solution to the initial board (using the A* algorithm)
   public Solver(Board initial) {
-
+    MinPQ<Boardy> pq = new MinPQ<>();
+    Board cur = initial;
+    while (true) {
+      Boardy top = pq.delMin();
+      int h = top.depth, w = top.weight;
+      Boardy p = top.pre;
+      for (Board u : cur.neighbors()) {
+        pq.insert(new Boardy(h + 1, w + u.manhattan(), u));
+      }
+    }
   }
 
   // is the initial board solvable? (see below)
